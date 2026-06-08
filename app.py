@@ -1,17 +1,31 @@
+import pandas as pd
+from werkzeug.utils import secure_filename
+import os
+
 from flask import Flask, render_template, request, jsonify
+from datetime import datetime
+import pandas as pd
 
 app = Flask(__name__)
 
-# -------------------------
-# Tabla de símbolos
-# -------------------------
+UPLOAD_FOLDER = "uploads"
+
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+# =========================
+# Estructuras Globales
+# =========================
 
 tabla_simbolos = {}
 inventario = {}
+historial = []
 
-# -------------------------
+# =========================
 # Generar código producto
-# -------------------------
+# =========================
 
 def generar_codigo(nombre):
 
@@ -24,183 +38,468 @@ def generar_codigo(nombre):
 
     return f"{letra}{contador}"
 
-# -------------------------
-# Compilador DSL
-# -------------------------
+# =========================
+# Registrar historial
+# =========================
 
-def compilar(codigo):
+def registrar_historial(
+    accion,
+    producto,
+    cantidad
+):
 
-    tokens = []
-    intermedio = []
-    resultado = []
+    historial.append({
 
-    lineas = codigo.splitlines()
+        "fecha":
+        datetime.now().strftime(
+            "%d/%m/%Y %H:%M:%S"
+        ),
 
-    for linea in lineas:
+        "accion":
+        accion,
 
-        linea = linea.strip()
+        "producto":
+        producto,
 
-        if linea == "":
-            continue
+        "cantidad":
+        cantidad
 
-        partes = linea.lower().split()
+    })
 
-        comando = partes[0]
+# =========================
+# Procesar comando DSL
+# =========================
 
-        # CREAR
+def procesar_linea(linea):
 
-        if comando == "crear":
+    tokens = ""
+    gramatica = ""
+    sql = ""
+    resultado = ""
 
-            producto = partes[1]
-            stock = int(partes[2])
+    partes = linea.lower().split()
 
-            if producto not in tabla_simbolos:
+    comando = partes[0]
 
-                codigo_producto = generar_codigo(producto)
+    # -------------------
+    # CREAR
+    # -------------------
 
-                tabla_simbolos[producto] = codigo_producto
+    if comando == "crear":
 
-                inventario[codigo_producto] = stock
+        producto = partes[1]
+        stock = int(partes[2])
 
-            tokens.append(
-                f"CREAR ID({producto}) NUMERO({stock})"
+        if producto not in tabla_simbolos:
+
+            codigo_producto = generar_codigo(
+                producto
             )
 
-            intermedio.append(
-                f"CREATE_PRODUCT {tabla_simbolos[producto]} {stock}"
-            )
+            tabla_simbolos[
+                producto
+            ] = codigo_producto
 
-        # AGREGAR
+            inventario[
+                codigo_producto
+            ] = stock
 
-        elif comando == "agregar":
+        tokens = (
+            f"CREAR "
+            f"ID({producto}) "
+            f"NUMERO({stock})"
+        )
 
-            producto = partes[1]
-            cantidad = int(partes[2])
+        gramatica = (
+            "COMANDO → "
+            "CREAR ID NUMERO"
+        )
 
-            if producto not in tabla_simbolos:
-                raise Exception(
-                    f"Producto no registrado: {producto}"
-                )
+        sql = (
+            "INSERT INTO PRODUCTOS "
+            "(CODIGO,NOMBRE,STOCK) VALUES "
+            f"('{tabla_simbolos[producto]}',"
+            f"'{producto}',"
+            f"{stock});"
+        )
 
-            codigo_producto = tabla_simbolos[producto]
+        resultado = (
+            f"Producto {producto} creado"
+        )
 
-            inventario[codigo_producto] += cantidad
+        registrar_historial(
+            "CREAR",
+            producto,
+            stock
+        )
 
-            tokens.append(
-                f"AGREGAR ID({producto}) NUMERO({cantidad})"
-            )
+    # -------------------
+    # AGREGAR
+    # -------------------
 
-            intermedio.append(
-                f"ADD_STOCK {codigo_producto} {cantidad}"
-            )
+    elif comando == "agregar":
 
-        # VENDER
+        producto = partes[1]
+        cantidad = int(partes[2])
 
-        elif comando == "vender":
+        codigo = tabla_simbolos[producto]
 
-            producto = partes[1]
-            cantidad = int(partes[2])
+        inventario[codigo] += cantidad
 
-            if producto not in tabla_simbolos:
-                raise Exception(
-                    f"Producto no registrado: {producto}"
-                )
+        tokens = (
+            f"AGREGAR "
+            f"ID({producto}) "
+            f"NUMERO({cantidad})"
+        )
 
-            codigo_producto = tabla_simbolos[producto]
+        gramatica = (
+            "COMANDO → "
+            "AGREGAR ID NUMERO"
+        )
 
-            if inventario[codigo_producto] < cantidad:
-                raise Exception(
-                    f"Stock insuficiente para {producto}"
-                )
+        sql = (
+            "UPDATE PRODUCTOS "
+            f"SET STOCK=STOCK+{cantidad} "
+            f"WHERE CODIGO='{codigo}';"
+        )
 
-            inventario[codigo_producto] -= cantidad
+        resultado = (
+            f"Stock agregado a "
+            f"{producto}"
+        )
 
-            tokens.append(
-                f"VENDER ID({producto}) NUMERO({cantidad})"
-            )
+        registrar_historial(
+            "AGREGAR",
+            producto,
+            cantidad
+        )
 
-            intermedio.append(
-                f"REMOVE_STOCK {codigo_producto} {cantidad}"
-            )
+    # -------------------
+    # VENDER
+    # -------------------
 
-        # CONSULTAR
+    elif comando == "vender":
 
-        elif comando == "consultar":
+        producto = partes[1]
+        cantidad = int(partes[2])
 
-            producto = partes[1]
+        codigo = tabla_simbolos[producto]
 
-            if producto not in tabla_simbolos:
-                raise Exception(
-                    f"Producto no registrado: {producto}"
-                )
+        inventario[codigo] -= cantidad
 
-            codigo_producto = tabla_simbolos[producto]
+        tokens = (
+            f"VENDER "
+            f"ID({producto}) "
+            f"NUMERO({cantidad})"
+        )
 
-            stock = inventario[codigo_producto]
+        gramatica = (
+            "COMANDO → "
+            "VENDER ID NUMERO"
+        )
 
-            tokens.append(
-                f"CONSULTAR ID({producto})"
-            )
+        sql = (
+            "UPDATE PRODUCTOS "
+            f"SET STOCK=STOCK-{cantidad} "
+            f"WHERE CODIGO='{codigo}';"
+        )
 
-            intermedio.append(
-                f"CHECK_STOCK {codigo_producto}"
-            )
+        resultado = (
+            f"Venta registrada "
+            f"de {producto}"
+        )
 
-            resultado.append(
-                f"{producto.upper()} ({codigo_producto}) = {stock}"
-            )
+        registrar_historial(
+            "VENDER",
+            producto,
+            cantidad
+        )
 
-        else:
+    # -------------------
+    # CONSULTAR
+    # -------------------
 
-            raise Exception(
-                f"Comando desconocido: {comando}"
-            )
+    elif comando == "consultar":
+
+        producto = partes[1]
+
+        codigo = tabla_simbolos[producto]
+
+        stock = inventario[codigo]
+
+        tokens = (
+            f"CONSULTAR "
+            f"ID({producto})"
+        )
+
+        gramatica = (
+            "COMANDO → "
+            "CONSULTAR ID"
+        )
+
+        sql = (
+            "SELECT * "
+            "FROM PRODUCTOS "
+            f"WHERE CODIGO='{codigo}';"
+        )
+
+        resultado = (
+            f"Stock actual: {stock}"
+        )
+
+        registrar_historial(
+            "CONSULTAR",
+            producto,
+            0
+        )
+
+    else:
+
+        raise Exception(
+            f"Comando desconocido: "
+            f"{comando}"
+        )
 
     return {
-        "tokens": "\n".join(tokens),
-        "intermedio": "\n".join(intermedio),
-        "resultado": "\n".join(resultado),
-        "simbolos": tabla_simbolos
+        "entrada": linea,
+        "tokens": tokens,
+        "gramatica": gramatica,
+        "sql": sql,
+        "resultado": resultado
     }
 
-# -------------------------
+# =========================
 # Página principal
-# -------------------------
+# =========================
 
 @app.route("/")
 def index():
 
-    return render_template("index.html")
+    return render_template(
+        "index.html"
+    )
 
-# -------------------------
-# API compilador
-# -------------------------
+# =========================
+# Compilar
+# =========================
 
-@app.route("/compilar", methods=["POST"])
-def compilar_api():
+@app.route(
+    "/compilar",
+    methods=["POST"]
+)
+def compilar():
 
     try:
 
         datos = request.get_json()
 
-        resultado = compilar(
+        resultado = procesar_linea(
             datos["codigo"]
         )
 
-        return jsonify(resultado)
+        return jsonify({
+
+            "ok": True,
+
+            **resultado,
+
+            "simbolos":
+            tabla_simbolos,
+
+            "inventario":
+            inventario,
+
+            "historial":
+            historial
+
+        })
 
     except Exception as e:
 
         return jsonify({
-            "tokens": "",
-            "intermedio": "",
-            "resultado": str(e),
-            "simbolos": tabla_simbolos
+
+            "ok": False,
+
+            "error": str(e)
+
         })
 
-# -------------------------
-# Ejecutar Flask
-# -------------------------
+# =========================
+# Estadísticas
+# =========================
+
+@app.route("/estadisticas")
+def estadisticas():
+
+    total_productos = len(
+        tabla_simbolos
+    )
+
+    total_stock = sum(
+        inventario.values()
+    )
+
+    total_operaciones = len(
+        historial
+    )
+
+    return jsonify({
+
+        "productos":
+        total_productos,
+
+        "stock":
+        total_stock,
+
+        "operaciones":
+        total_operaciones
+
+    })
+
+# =========================
+# Historial
+# =========================
+
+@app.route("/historial")
+def ver_historial():
+
+    return jsonify(historial)
+
+
+
+#--------------------------
+#Importar TXT
+#--------------------------
+@app.route(
+    "/importar_txt",
+    methods=["POST"]
+)
+def importar_txt():
+
+    try:
+
+        archivo = request.files["archivo"]
+
+        contenido = archivo.read().decode(
+            "utf-8"
+        )
+
+        resultados = []
+
+        for linea in contenido.splitlines():
+
+            linea = linea.strip()
+
+            if linea == "":
+                continue
+
+            resultado = procesar_linea(
+                linea
+            )
+
+            resultados.append(resultado)
+
+        return jsonify({
+
+            "ok": True,
+
+            "registros":
+            resultados
+
+        })
+
+    except Exception as e:
+
+        return jsonify({
+
+            "ok": False,
+
+            "error": str(e)
+
+        })
+# =========================
+# Importar Excel
+# =========================
+
+@app.route(
+    "/importar_excel",
+    methods=["POST"]
+)
+def importar_excel():
+
+    try:
+
+        archivo = request.files["archivo"]
+
+        ruta = os.path.join(
+
+            app.config[
+                "UPLOAD_FOLDER"
+            ],
+
+            secure_filename(
+                archivo.filename
+            )
+
+        )
+
+        archivo.save(ruta)
+
+        df = pd.read_excel(ruta)
+
+        resultados = []
+
+        for _, fila in df.iterrows():
+
+            accion = str(
+                fila["accion"]
+            ).lower()
+
+            producto = str(
+                fila["producto"]
+            ).lower()
+
+            cantidad = int(
+                fila["cantidad"]
+            )
+
+            comando = (
+                f"{accion} "
+                f"{producto} "
+                f"{cantidad}"
+            )
+
+            resultado = procesar_linea(
+                comando
+            )
+
+            resultados.append(
+                resultado
+            )
+
+        return jsonify({
+
+            "ok": True,
+
+            "registros":
+            resultados
+
+        })
+
+    except Exception as e:
+
+        return jsonify({
+
+            "ok": False,
+
+            "error": str(e)
+
+        })
+
+
+# =========================
+# Ejecutar
+# =========================
 
 if __name__ == "__main__":
 
