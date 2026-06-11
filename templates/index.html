@@ -261,9 +261,9 @@ function crearProducto() {
         prompt("Cantidad inicial:");
 
     document.getElementById(
-        "command-input"
-    ).value =
-        `crear ${nombre} ${cantidad}`;
+    "command-input"
+).value +=
+    `crear ${nombre} ${cantidad}\n`;
 }
 
 function agregarStock() {
@@ -275,9 +275,9 @@ function agregarStock() {
         prompt("Cantidad:");
 
     document.getElementById(
-        "command-input"
-    ).value =
-        `agregar ${nombre} ${cantidad}`;
+    "command-input"
+).value +=
+    `agregar ${nombre} ${cantidad}\n`;
 }
 
 function venderProducto() {
@@ -289,9 +289,9 @@ function venderProducto() {
         prompt("Cantidad:");
 
     document.getElementById(
-        "command-input"
-    ).value =
-        `vender ${nombre} ${cantidad}`;
+    "command-input"
+).value +=
+    `vender ${nombre} ${cantidad}\n`;
 }
 
 function consultarProducto() {
@@ -300,9 +300,9 @@ function consultarProducto() {
         prompt("Producto:");
 
     document.getElementById(
-        "command-input"
-    ).value =
-        `consultar ${nombre}`;
+    "command-input"
+).value +=
+    `consultar ${nombre}\n`;
 }
 
 function mostrarMensaje(
