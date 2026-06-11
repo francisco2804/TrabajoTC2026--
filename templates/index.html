@@ -139,7 +139,10 @@
 
         </button>
 
-    </div>
+    <div
+    id="mensaje"
+    class="mt-4 p-3 rounded hidden">
+</div>
 
     <!-- Tabla principal -->
 
@@ -302,6 +305,32 @@ function consultarProducto() {
         `consultar ${nombre}`;
 }
 
+function mostrarMensaje(
+    texto,
+    exito = true
+){
+
+    const mensaje =
+        document.getElementById(
+            "mensaje"
+        );
+
+    mensaje.innerText = texto;
+
+    mensaje.className =
+        exito
+        ? "mt-4 p-3 rounded bg-green-200 text-green-800"
+        : "mt-4 p-3 rounded bg-red-200 text-red-800";
+
+    setTimeout(() => {
+
+        mensaje.classList.add(
+            "hidden"
+        );
+
+    }, 3000);
+}    
+
 function agregarFila(
     entrada,
     tokens,
@@ -368,6 +397,10 @@ async function processCommand() {
         return;
     }
 
+    document.getElementById(
+    "tablaResultados"
+).innerHTML = "";
+
     agregarFila(
 
     data.entrada,
@@ -379,6 +412,16 @@ async function processCommand() {
     data.sql
 
 );
+
+    mostrarMensaje(
+    "Comando procesado correctamente"
+);
+
+    document.getElementById(
+    "command-input"
+).value = "";
+
+    
 
     document.getElementById(
         "resultado"
@@ -445,6 +488,10 @@ async function processCommand() {
 
     if(data.ok){
 
+        document.getElementById(
+    "tablaResultados"
+).innerHTML = "";
+
     data.registros.forEach(
         item => {
 
@@ -462,6 +509,14 @@ async function processCommand() {
 
         }
     );
+
+    mostrarMensaje(
+    "TXT cargado correctamente"
+);
+
+        document.getElementById(
+    "txtFile"
+).value = "";
 
     cargarHistorial();
 
@@ -514,6 +569,10 @@ async function importarExcel(){
 
     if(data.ok){
 
+        document.getElementById(
+    "tablaResultados"
+).innerHTML = "";
+
     data.registros.forEach(
         item => {
 
@@ -532,6 +591,14 @@ async function importarExcel(){
         }
     );
 
+    mostrarMensaje(
+    "Excel cargado correctamente"
+);
+
+    document.getElementById(
+    "excelFile"
+).value = "";    
+
     cargarHistorial();
 
     cargarEstadisticas();
@@ -545,6 +612,8 @@ async function importarExcel(){
         );
     }
 }
+
+
 
 async function cargarHistorial(){
 
