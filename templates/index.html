@@ -125,8 +125,7 @@
 
         <textarea
             id="command-input"
-            class="w-full border p-4 rounded h-24"
-            readonly>
+            class="w-full border p-4 rounded h-24">
         </textarea>
 
         <button
@@ -140,6 +139,8 @@
     <div
     id="mensaje"
     class="mt-4 p-3 rounded hidden">
+</div>
+
 </div>
 
     <!-- Tabla principal -->
@@ -402,39 +403,7 @@ function mostrarMensaje(
     }, 3000);
 }    
 
-function agregarFila(
-    entrada,
-    tokens,
-    gramatica,
-    sql
-){
 
-    document.getElementById(
-        "tablaResultados"
-    ).innerHTML += `
-
-    <tr>
-
-        <td class="border p-2">
-            ${entrada}
-        </td>
-
-        <td class="border p-2">
-            ${tokens}
-        </td>
-
-        <td class="border p-2">
-            ${gramatica}
-        </td>
-
-        <td class="border p-2">
-            ${sql}
-        </td>
-
-    </tr>
-
-    `;
-}
     
 async function processCommand() {
 
@@ -468,27 +437,42 @@ async function processCommand() {
         return;
     }
 
-    document.getElementById(
-    "tablaResultados"
-).innerHTML = "";
+    let entrada = "";
+let tokens = "";
+let gramatica = "";
+let sql = "";
 
-data.registros.forEach(
-    item => {
+data.registros.forEach(item => {
 
-        agregarFila(
+    entrada += item.entrada + "\n";
 
-            item.entrada,
+    tokens += item.tokens + "\n";
 
-            item.tokens,
+    gramatica += item.gramatica + "\n";
 
-            item.gramatica,
+    sql += item.sql + "\n";
 
-            item.sql
+});
 
-        );
+document.getElementById(
+    "entrada"
+).innerText = entrada;
 
-    }
-);
+document.getElementById(
+    "entrada2"
+).innerText = entrada;
+
+document.getElementById(
+    "tokens"
+).innerText = tokens;
+
+document.getElementById(
+    "gramatica"
+).innerText = gramatica;
+
+document.getElementById(
+    "sql"
+).innerText = sql;
 
     mostrarMensaje(
     "Comando procesado correctamente"
@@ -565,27 +549,42 @@ data.registros.forEach(
 
     if(data.ok){
 
-        document.getElementById(
-    "tablaResultados"
-).innerHTML = "";
+       let entrada = "";
+let tokens = "";
+let gramatica = "";
+let sql = "";
 
-    data.registros.forEach(
-        item => {
+data.registros.forEach(item => {
 
-            agregarFila(
+    entrada += item.entrada + "\n";
 
-                item.entrada,
+    tokens += item.tokens + "\n";
 
-                item.tokens,
+    gramatica += item.gramatica + "\n";
 
-                item.gramatica,
+    sql += item.sql + "\n";
 
-                item.sql
+});
 
-            );
+document.getElementById(
+    "entrada"
+).innerText = entrada;
 
-        }
-    );
+document.getElementById(
+    "entrada2"
+).innerText = entrada;
+
+document.getElementById(
+    "tokens"
+).innerText = tokens;
+
+document.getElementById(
+    "gramatica"
+).innerText = gramatica;
+
+document.getElementById(
+    "sql"
+).innerText = sql;
 
     mostrarMensaje(
     "TXT cargado correctamente"
@@ -646,27 +645,42 @@ async function importarExcel(){
 
     if(data.ok){
 
-        document.getElementById(
-    "tablaResultados"
-).innerHTML = "";
+       let entrada = "";
+let tokens = "";
+let gramatica = "";
+let sql = "";
 
-    data.registros.forEach(
-        item => {
+data.registros.forEach(item => {
 
-            agregarFila(
+    entrada += item.entrada + "\n";
 
-                item.entrada,
+    tokens += item.tokens + "\n";
 
-                item.tokens,
+    gramatica += item.gramatica + "\n";
 
-                item.gramatica,
+    sql += item.sql + "\n";
 
-                item.sql
+});
 
-            );
+document.getElementById(
+    "entrada"
+).innerText = entrada;
 
-        }
-    );
+document.getElementById(
+    "entrada2"
+).innerText = entrada;
+
+document.getElementById(
+    "tokens"
+).innerText = tokens;
+
+document.getElementById(
+    "gramatica"
+).innerText = gramatica;
+
+document.getElementById(
+    "sql"
+).innerText = sql;
 
     mostrarMensaje(
     "Excel cargado correctamente"
