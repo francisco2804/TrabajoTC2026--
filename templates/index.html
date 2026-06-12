@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RetailDSL - Gestión de Inventario</title>
+    <title>Gestión de Inventario</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -22,11 +22,7 @@
         </h1>
 
         <p class="mt-2 text-gray-600">
-            Este sistema permite gestionar operaciones de inventario mediante
-            un lenguaje de dominio específico (DSL). Las instrucciones ingresadas
-            o importadas son analizadas léxica, sintáctica y semánticamente para 
-            validar su estructura y generar automáticamente comandos SQL Server, 
-            reduciendo errores en la gestión de almacén.
+            Este sistema fue desarrollado para apoyar la gestión de inventarios en MYPES del sector retail, donde frecuentemente se presentan errores en las operaciones de almacén, como registros incorrectos de productos, inconsistencias de stock y fallas en la actualización de inventarios. Para solucionar este problema, el sistema utiliza un procesador de lenguaje de dominio específico que interpreta, valida y transforma las operaciones de almacén mediante análisis léxico, sintáctico y semántico. De esta manera, permite automatizar procesos, reducir errores operativos y generar automáticamente instrucciones SQL Server para una gestión más eficiente y confiable del inventario.
         </p>
 
     </div>
@@ -124,8 +120,8 @@
     <div class="bg-white shadow rounded p-6 mb-6">
 
         <h2 class="text-2xl font-bold mb-4">
-            Comando Generado
-        </h2>
+    Código Fuente
+</h2>
 
         <textarea
             id="command-input"
@@ -156,40 +152,113 @@
 
         <div class="overflow-x-auto">
 
-            <table class="table-auto w-full border">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                <thead>
+    <!-- ANALISIS LEXICO -->
 
-                    <tr class="bg-gray-200">
+    <div class="bg-white shadow rounded p-6">
 
-                        <th class="border p-2">
-                            Entrada
-                        </th>
+        <h2 class="text-2xl font-bold text-blue-700 mb-4">
+            Análisis Léxico
+        </h2>
 
-                        <th class="border p-2">
-                            Tokens
-                        </th>
+        <h3 class="font-bold">
+            Código Fuente
+        </h3>
 
-                        <th class="border p-2">
-                            Gramática
-                        </th>
+        <pre id="entrada"
+             class="border p-3 bg-gray-100"></pre>
 
-                        <th class="border p-2">
-                            SQL Server
-                        </th>
+        <h3 class="font-bold mt-4">
+            Tokens
+        </h3>
 
-                    </tr>
+        <pre id="tokens"
+             class="border p-3 bg-gray-100"></pre>
 
-                </thead>
+        <h3 class="font-bold mt-4">
+            Expresiones Regulares
+        </h3>
 
-                <tbody id="tablaResultados">
+        <pre class="border p-3 bg-gray-100">
+IDENTIFICADOR → [a-zA-Z]+
+NUMERO → [0-9]+
+COMANDO → crear|agregar|vender|consultar
+        </pre>
 
-            </tbody>
-                      
+        <h3 class="font-bold mt-4">
+            AFD
+        </h3>
 
-                   
+        <pre class="border p-3 bg-gray-100">
+Estado0 → COMANDO
+Estado1 → ID
+Estado2 → NUMERO
+EstadoFinal
+        </pre>
 
-            </table>
+        <h3 class="font-bold mt-4">
+            Tabla de Transiciones
+        </h3>
+
+        <pre class="border p-3 bg-gray-100">
+0 --COMANDO--> 1
+1 --ID-------> 2
+2 --NUMERO---> 3
+        </pre>
+
+    </div>
+
+    <!-- ANALISIS SINTACTICO -->
+
+    <div class="bg-white shadow rounded p-6">
+
+        <h2 class="text-2xl font-bold text-green-700 mb-4">
+            Análisis Sintáctico
+        </h2>
+
+        <h3 class="font-bold">
+            Código Fuente
+        </h3>
+
+        <pre id="entrada2"
+             class="border p-3 bg-gray-100"></pre>
+
+        <h3 class="font-bold mt-4">
+            Gramática
+        </h3>
+
+        <pre id="gramatica"
+             class="border p-3 bg-gray-100"></pre>
+
+        <h3 class="font-bold mt-4">
+            Árbol Sintáctico
+        </h3>
+
+        <pre id="arbol"
+             class="border p-3 bg-gray-100">
+COMANDO
+├── ACCION
+├── PRODUCTO
+└── CANTIDAD
+        </pre>
+
+    </div>
+
+</div>
+
+            <div class="bg-white shadow rounded p-6 mt-6">
+
+    <h2 class="text-2xl font-bold text-red-700 mb-4">
+        Traducción SQL Server
+    </h2>
+
+    <pre id="sql"
+         class="border p-4 bg-gray-100"></pre>
+
+</div>
+
+            
 
         </div>
 
