@@ -23,8 +23,6 @@ def interpretar(linea):
 
     }
 
-    #una hora peleando con esto y era la sangría
-
     if partes[0] == "RETIRAR":
 
         return {
@@ -37,7 +35,7 @@ def interpretar(linea):
 
     }
 
-    if partes[0] == "CONSULTAR":
+    elif partes[0] == "CONSULTAR":
 
         return {
 
@@ -47,7 +45,7 @@ def interpretar(linea):
 
     }
 
-    if partes[0] == "AJUSTAR":
+    elif partes[0] == "AJUSTAR":
 
         return {
 
@@ -59,7 +57,7 @@ def interpretar(linea):
 
     }
 
-    if partes[0] == "TRANSFERIR":
+    elif partes[0] == "TRANSFERIR":
 
         return {
 
@@ -75,7 +73,7 @@ def interpretar(linea):
 
     }
 
-    if partes[0] == "RECIBIR_LOTE":
+    elif partes[0] == "RECIBIR_LOTE":
 
         return {
 
@@ -96,21 +94,3 @@ def interpretar(linea):
         "error": "Operación no reconocida"
 
     }
-
-#testing testing ヽ(｀Д´)ﾉ (prueba)
-
-if __name__ == "__main__":
-
-    linea = (
-        "RECIBIR_LOTE "
-        "PROD-FRU-001 "
-        "LOT-TAC-202505 "
-        "PROV-AGRO-001 "
-        "50"
-    )
-
-    print(
-    interpretar(
-        "TRANSFERIR PROD-FRU-001 DESDE ALM-A01 HACIA ALM-B01 20"
-    )
-)

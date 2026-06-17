@@ -1,7 +1,7 @@
 from lexer import analizar_lexico
 
 PATRONES = {
-#esto no es la gramtica 0_0
+#gramatica
 
     "INGRESAR": [
         "INGRESAR",
@@ -86,28 +86,27 @@ def validar_sintaxis(linea):
                 "esperado": patron_esperado[i]
         }
 
-    if tokens_obtenidos[i] != patron_esperado[i]:
+        if tokens_obtenidos[i] != patron_esperado[i]:
 
-        return {
-            "valido": False,
-            "error": "Token inesperado",
-            "posicion": i + 1,
-            "esperado": patron_esperado[i],
-            "recibido": tokens_obtenidos[i]
-        }
+            return {
+                "valido": False,
+                "error": "Token inesperado",
+                "posicion": i + 1,
+                "esperado": patron_esperado[i],
+                "recibido": tokens_obtenidos[i]
+            }
+        
+        if len(tokens_obtenidos) > len(patron_esperado):
+            return {
+                "valido": False,
+                "error": "Demasiados elementos"
+            }
 
     return {
         "valido": True,
         "motivo": "Estructura válida"
     }
 
-{
-    "operacion": "RECIBIR_LOTE",
-    "producto": "PROD-FRU-001",
-    "lote": "LOT-TAC-202505",
-    "proveedor": "PROV-AGRO-001",
-    "cantidad": 50
-}
 
 #pruebas x2
 
@@ -121,15 +120,7 @@ if __name__ == "__main__":
         "50"
     )
 
-    prueba = (
-    "RECIBIR_LOTE "
-    "PROD-FRU-001 "
-    "LOT-TAC-202505 "
-    "PROV-AGRO-001 "
-)
-
     print(
         validar_sintaxis(prueba)
-    )
-    
+    ) 
     
