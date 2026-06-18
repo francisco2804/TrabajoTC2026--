@@ -7,6 +7,7 @@ from parser import validar_sintaxis
 from interpreter import interpretar
 from transformador import transformar
 from afd import AFD_PRODUCTO
+from arbol import construir_arbol
 
 app = Flask(__name__)
 
@@ -257,6 +258,21 @@ def estadisticas():
 def mostrar_afd():
     return render_template("afd.html", tabla=AFD_PRODUCTO)
 
+@app.route("/arbol")
+def mostrar_arbol():
+    linea = (
+        "RECIBIR_LOTE "
+        "PROD-FRU-001 "
+        "LOT-TAC-202505 "
+        "PROV-AGRO-001 "
+        "50"
+    )
 
+    arbol = construir_arbol(linea)
+
+    return render_template(
+        "arbol.html",
+        arbol=arbol
+    )
 if __name__ == "__main__":
     app.run(debug=True)
