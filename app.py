@@ -5,6 +5,7 @@ from lexer import analizar_lexico
 from parser import validar_sintaxis
 from interpreter import interpretar
 from transformador import transformar
+from afd import AFD_PRODUCTO
 
 app = Flask(__name__)
 
@@ -66,3 +67,15 @@ if __name__ == "__main__":
     app.run(
         debug=True
     )
+
+@app.route("/afd")
+def mostrar_afd():
+
+    return render_template(
+        "afd.html",
+        tabla=AFD_PRODUCTO
+    )
+
+
+
+
