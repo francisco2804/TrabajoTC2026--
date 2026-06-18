@@ -164,13 +164,6 @@
         </h2>
 
         <h3 class="font-bold">
-            Código Fuente
-        </h3>
-
-        <pre id="entrada"
-             class="border p-3 bg-gray-100"></pre>
-
-        <h3 class="font-bold mt-4">
             Tokens
         </h3>
 
@@ -219,13 +212,6 @@ EstadoFinal
         </h2>
 
         <h3 class="font-bold">
-            Código Fuente
-        </h3>
-
-        <pre id="entrada2"
-             class="border p-3 bg-gray-100"></pre>
-
-        <h3 class="font-bold mt-4">
             Gramática
         </h3>
 
@@ -250,9 +236,16 @@ COMANDO
 
             <div class="bg-white shadow rounded p-6 mt-6">
 
-    <h2 class="text-2xl font-bold text-red-700 mb-4">
-        Traducción SQL Server
-    </h2>
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-red-700">
+            Traducción SQL Server
+        </h2>
+        <button
+            onclick="exportarSQL()"
+            class="bg-red-700 text-white px-4 py-2 rounded text-sm flex items-center gap-2">
+            ⬇ Exportar .sql
+        </button>
+    </div>
 
     <pre id="sql"
          class="border p-4 bg-gray-100"></pre>
@@ -377,6 +370,47 @@ function consultarProducto() {
     `consultar ${nombre}\n`;
 }
 
+function exportarSQL() {
+
+    const contenido =
+        document.getElementById(
+            "sql"
+        ).innerText;
+
+    if (!contenido.trim()) {
+
+        alert(
+            "No hay SQL generado para exportar"
+        );
+
+        return;
+    }
+
+    const blob = new Blob(
+        [contenido],
+        { type: "text/plain;charset=utf-8" }
+    );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+
+    a.href = url;
+
+    a.download =
+        "inventario_" +
+        new Date()
+            .toISOString()
+            .slice(0, 10) +
+        ".sql";
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+
 function mostrarMensaje(
     texto,
     exito = true
@@ -444,8 +478,6 @@ let sql = "";
 
 data.registros.forEach(item => {
 
-    entrada += item.entrada + "\n";
-
     tokens += item.tokens + "\n";
 
     gramatica += item.gramatica + "\n";
@@ -453,14 +485,6 @@ data.registros.forEach(item => {
     sql += item.sql + "\n";
 
 });
-
-document.getElementById(
-    "entrada"
-).innerText = entrada;
-
-document.getElementById(
-    "entrada2"
-).innerText = entrada;
 
 document.getElementById(
     "tokens"
@@ -556,8 +580,6 @@ let sql = "";
 
 data.registros.forEach(item => {
 
-    entrada += item.entrada + "\n";
-
     tokens += item.tokens + "\n";
 
     gramatica += item.gramatica + "\n";
@@ -565,14 +587,6 @@ data.registros.forEach(item => {
     sql += item.sql + "\n";
 
 });
-
-document.getElementById(
-    "entrada"
-).innerText = entrada;
-
-document.getElementById(
-    "entrada2"
-).innerText = entrada;
 
 document.getElementById(
     "tokens"
@@ -652,8 +666,6 @@ let sql = "";
 
 data.registros.forEach(item => {
 
-    entrada += item.entrada + "\n";
-
     tokens += item.tokens + "\n";
 
     gramatica += item.gramatica + "\n";
@@ -661,14 +673,6 @@ data.registros.forEach(item => {
     sql += item.sql + "\n";
 
 });
-
-document.getElementById(
-    "entrada"
-).innerText = entrada;
-
-document.getElementById(
-    "entrada2"
-).innerText = entrada;
 
 document.getElementById(
     "tokens"
