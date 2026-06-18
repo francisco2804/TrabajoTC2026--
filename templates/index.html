@@ -116,12 +116,24 @@ async function processCommand() {
     const data = await response.json();
     if(!data.ok){ alert(data.error); return; }
 
-    let entrada = "", gramatica = "", jsonTraducido = "", tokensHTML = "";
+    let entrada = "";
+    let gramatica = "";
+    let jsonTraducido = "";
+    let tokensHTML = "";
 
     data.registros.forEach(item => {
-        item.tokens_detalle.forEach((token, index) => {
-            tokensHTML += `<tr><td class="border border-gray-300 px-3 py-2">${index + 1}</td><td class="border border-gray-300 px-3 py-2">${token.lexema}</td><td class="border border-gray-300 px-3 py-2">${token.token}</td><td class="border border-gray-300 px-3 py-2 text-center">✓</td></tr>`;
-        });
+        if (item.tokens_detalle) {
+            item.tokens_detalle.forEach((token, index) => {
+                tokensHTML += `
+                    <tr>
+                        <td class="border border-gray-300 px-3 py-2">${index + 1}</td>
+                        <td class="border border-gray-300 px-3 py-2">${token.lexema}</td>
+                        <td class="border border-gray-300 px-3 py-2">${token.token}</td>
+                        <td class="border border-gray-300 px-3 py-2 text-center">✓</td>
+                    </tr>
+                `;
+            });
+        }
         entrada += item.entrada + "\n";
         gramatica += item.gramatica + "\n";
         jsonTraducido += item.json + "\n";
@@ -151,17 +163,30 @@ async function importarExcel() {
     const data = await response.json();
 
     if(data.ok){
-        let entrada = "", gramatica = "", jsonTraducido = "", tokensHTML = "";
+        let entrada = "";
+        let gramatica = "";
+        let jsonTraducido = "";
+        let tokensHTML = "";
+        
         data.registros.forEach(item => {
-            item.tokens_detalle.forEach((token, index) => {
-                tokensHTML += `<tr><td class="border border-gray-300 px-3 py-2">${index + 1}</td><td class="border border-gray-300 px-3 py-2">${token.lexema}</td><td class="border border-gray-300 px-3 py-2">${token.token}</td><td class="border border-gray-300 px-3 py-2 text-center">✓</td></tr>`;
-            });
+            if (item.tokens_detalle) {
+                item.tokens_detalle.forEach((token, index) => {
+                    tokensHTML += `
+                        <tr>
+                            <td class="border border-gray-300 px-3 py-2">${index + 1}</td>
+                            <td class="border border-gray-300 px-3 py-2">${token.lexema}</td>
+                            <td class="border border-gray-300 px-3 py-2">${token.token}</td>
+                            <td class="border border-gray-300 px-3 py-2 text-center">✓</td>
+                        </tr>
+                    `;
+                });
+            }
             entrada += item.entrada + "\n";
             gramatica += item.gramatica + "\n";
             jsonTraducido += item.json + "\n";
         });
 
-        document.getElementById("tokens-tbody").innerHTML = tokensHTML;
+        document.getElementById("tokens-tbody").innerHTML = tokensHTML || `<tr><td colspan="4" class="border border-gray-300 px-3 py-2 text-center">Sin datos</td></tr>`;
         document.getElementById("entrada2").innerText = entrada;
         document.getElementById("gramatica").innerText = gramatica;
         document.getElementById("json-output").innerText = jsonTraducido;
