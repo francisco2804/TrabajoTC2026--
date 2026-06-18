@@ -22,7 +22,7 @@
         </h1>
 
         <p class="mt-2 text-gray-600">
-            Este sistema fue desarrollado para apoyar la gestión de inventarios en MYPES del sector retail, donde frecuentemente se presentan errores en las operaciones de almacén, como registros incorrectos de productos, inconsistencias de stock y fallas en la actualización de inventarios. Para solucionar este problema, el sistema utiliza un procesador de lenguaje de dominio específico que interpreta, valida y transforma las operaciones de almacén mediante análisis léxico, sintáctico y semántico. De esta manera, permite automatizar procesos, reducir errores operativos y generar automáticamente instrucciones SQL Server para una gestión más eficiente y confiable del inventario.
+            Este sistema fue desarrollado para apoyar la gestión de inventarios en MYPES del sector retail, donde frecuentemente se presentan errores en las operaciones de almacén, como registros incorrectos de productos, inconsistencias de stock y fallas en la actualización de inventarios. Para solucionar este problema, el sistema utiliza un procesador de lenguaje de dominio específico que interpreta, valida y transforma las operaciones de almacén mediante análisis léxico y sintáctico. De esta manera, permite automatizar procesos, reducir errores operativos y generar automáticamente instrucciones SQL Server para una gestión más eficiente y confiable del inventario.
         </p>
 
     </div>
@@ -37,27 +37,6 @@
 
         <hr class="my-4">
 
-<h3 class="font-bold text-lg">
-    Importar Archivos
-</h3>
-
-<div class="mt-4">
-
-    <input
-        type="file"
-        id="txtFile"
-        accept=".txt"
-        class="mb-2">
-
-    <button
-        onclick="importarTXT()"
-        class="bg-indigo-600 text-white px-4 py-2 rounded">
-
-        Importar TXT
-
-    </button>
-
-</div>
 
 <div class="mt-4">
 
@@ -348,55 +327,37 @@ COMANDO
 
 function crearProducto() {
 
-    let nombre =
-        prompt("Nombre del producto:");
+    let producto = prompt("Código del producto (ej: PROD-FRU-001):");
+    let cantidad = prompt("Cantidad inicial:");
 
-    let cantidad =
-        prompt("Cantidad inicial:");
-
-    document.getElementById(
-    "command-input"
-).value +=
-    `crear ${nombre} ${cantidad}\n`;
+    document.getElementById("command-input").value +=
+        `INGRESAR ${producto} ${cantidad}\n`;
 }
 
 function agregarStock() {
 
-    let nombre =
-        prompt("Producto:");
+    let producto = prompt("Código del producto:");
+    let cantidad = prompt("Cantidad:");
 
-    let cantidad =
-        prompt("Cantidad:");
-
-    document.getElementById(
-    "command-input"
-).value +=
-    `agregar ${nombre} ${cantidad}\n`;
+    document.getElementById("command-input").value +=
+        `INGRESAR ${producto} ${cantidad}\n`;
 }
 
 function venderProducto() {
 
-    let nombre =
-        prompt("Producto:");
+    let producto = prompt("Código del producto:");
+    let cantidad = prompt("Cantidad:");
 
-    let cantidad =
-        prompt("Cantidad:");
-
-    document.getElementById(
-    "command-input"
-).value +=
-    `vender ${nombre} ${cantidad}\n`;
+    document.getElementById("command-input").value +=
+        `RETIRAR ${producto} ${cantidad}\n`;
 }
 
 function consultarProducto() {
 
-    let nombre =
-        prompt("Producto:");
+    let producto = prompt("Código del producto:");
 
-    document.getElementById(
-    "command-input"
-).value +=
-    `consultar ${nombre}\n`;
+    document.getElementById("command-input").value +=
+        `CONSULTAR ${producto}\n`;
 }
 
 function mostrarMensaje(
@@ -531,102 +492,6 @@ document.getElementById(
 
     cargarEstadisticas();
 
-}
-
-    async function importarTXT(){
-
-    const archivo =
-        document.getElementById(
-            "txtFile"
-        ).files[0];
-
-    if(!archivo){
-
-        alert(
-            "Seleccione un archivo TXT"
-        );
-
-        return;
-    }
-
-    const formData =
-        new FormData();
-
-    formData.append(
-        "archivo",
-        archivo
-    );
-
-    const response =
-        await fetch(
-            "/importar_txt",
-            {
-                method:"POST",
-                body:formData
-            }
-        );
-
-    const data =
-        await response.json();
-
-    if(data.ok){
-
-       let entrada = "";
-let tokens = "";
-let gramatica = "";
-let sql = "";
-
-data.registros.forEach(item => {
-
-    entrada += item.entrada + "\n";
-
-    tokens += item.tokens + "\n";
-
-    gramatica += item.gramatica + "\n";
-
-    sql += item.sql + "\n";
-
-});
-
-document.getElementById(
-    "entrada"
-).innerText = entrada;
-
-document.getElementById(
-    "entrada2"
-).innerText = entrada;
-
-document.getElementById(
-    "tokens"
-).innerText = tokens;
-
-document.getElementById(
-    "gramatica"
-).innerText = gramatica;
-
-document.getElementById(
-    "sql"
-).innerText = sql;
-
-    mostrarMensaje(
-    "TXT cargado correctamente"
-);
-
-        document.getElementById(
-    "txtFile"
-).value = "";
-
-    cargarHistorial();
-
-    cargarEstadisticas();
-
-}
-    else{
-
-        alert(
-            data.error
-        );
-    }
 }
 
 async function importarExcel(){
