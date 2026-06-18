@@ -7,7 +7,6 @@ from interpreter import interpretar
 from transformador import transformar
 from afd import AFD_PRODUCTO
 from arbol import construir_arbol
-from json_gen import generar_json
 
 app = Flask(__name__)
 
@@ -117,9 +116,9 @@ def procesar_excel():
                 linea
             )
 
-            json_operacion = generar_json(
-                interpretacion
-            )
+            json_operacion = transformar(
+    interpretacion
+)
 
             resultados.append({
 
@@ -154,11 +153,7 @@ def procesar_excel():
         })
 
     
-if __name__ == "__main__":
 
-    app.run(
-        debug=True
-    )
 
 @app.route("/afd")
 def mostrar_afd():
@@ -186,4 +181,10 @@ def mostrar_arbol():
     return render_template(
         "arbol.html",
         arbol=arbol
+    )
+
+if __name__ == "__main__":
+
+    app.run(
+        debug=True
     )
