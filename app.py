@@ -199,23 +199,6 @@ def compilar():
         return jsonify({"ok": False, "error": str(e)})
 
 
-@app.route("/importar_txt", methods=["POST"])
-def importar_txt():
-    try:
-        archivo = request.files["archivo"]
-        contenido = archivo.read().decode("utf-8")
-        lineas    = [l.strip() for l in contenido.splitlines() if l.strip()]
-        registros = [procesar_linea(l) for l in lineas]
-
-        return jsonify({
-            "ok":        True,
-            "registros": registros,
-            "simbolos":  dict(inventario),
-        })
-
-    except Exception as e:
-        return jsonify({"ok": False, "error": str(e)})
-
 
 @app.route("/importar_excel", methods=["POST"])
 def importar_excel():
