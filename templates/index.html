@@ -157,49 +157,55 @@ async function processCommand() {
 
 async function importarExcel() {
     const archivo = document.getElementById("excelFile").files[0];
-    if(!archivo){ alert("Seleccione un archivo Excel"); return; }
-    const formData = new FormData(); formData.append("archivo", archivo);
-    const response = await fetch("/importar_excel", { method:"POST", body:formData });
+    if (!archivo) {
+        alert("Seleccione un archivo Excel");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("archivo", archivo);
+
+    const response = await fetch("/procesar_excel", {
+        method: "POST",
+        body: formData
+    });
+
     const data = await response.json();
 
-    if(data.ok){
-        let entrada = "";
-        let gramatica = "";
-        let jsonTraducido = "";
-        let tokensHTML = "";
-        
-        data.registros.forEach(item => {
-            if (item.tokens_detalle) {
-                item.tokens_detalle.forEach((token, index) => {
-                    tokensHTML += `
-                        <tr>
-                            <td class="border border-gray-300 px-3 py-2">${index + 1}</td>
-                            <td class="border border-gray-300 px-3 py-2">${token.lexema}</td>
-                            <td class="border border-gray-300 px-3 py-2">${token.token}</td>
-                            <td class="border border-gray-300 px-3 py-2 text-center">✓</td>
-                        </tr>
-                    `;
-                });
-            }
-            entrada += item.entrada + "\n";
-            gramatica += item.gramatica + "\n";
-            jsonTraducido += item.json + "\n";
-        });
+    console.log(data);
 
-        document.getElementById("tokens-tbody").innerHTML = tokensHTML || `<tr><td colspan="4" class="border border-gray-300 px-3 py-2 text-center">Sin datos</td></tr>`;
-        document.getElementById("entrada2").innerText = entrada;
-        document.getElementById("gramatica").innerText = gramatica;
-        document.getElementById("json-output").innerText = jsonTraducido;
+    if (!data.ok) {
+        alert(data.error);
+        return;
+    }
 
-        let simbolos = "";
-        for (let producto in data.simbolos) { simbolos += producto + " → " + data.simbolos[producto] + "\n"; }
-        document.getElementById("simbolos").innerText = simbolos;
+    let jsonTraducido = "";
+    let tokensHTML = "";
+    let entrada = "";
 
-        mostrarMensaje("Excel cargado correctamente");
-        document.getElementById("excelFile").value = "";
-        cargarHistorial();
-        cargarEstadisticas();
-    } else { alert(data.error); }
+    data.resultados.forEach((item, fila) => {
+        entrada += item.linea_dsl + "\n";
+        if (item.tokens && item.tokens.tokens) {
+            item.tokens.tokens.forEach((token, index) => {
+                tokensHTML += `
+                    <tr>
+                        <td class="border border-gray-300 px-3 py-2">${fila + 1}.${index + 1}</td>
+                        <td class="border border-gray-300 px-3 py-2">${token.lexema}</td>
+                        <td class="border border-gray-300 px-3 py-2">${token.token}</td>
+                        <td class="border border-gray-300 px-3 py-2 text-center">✓</td>
+                    </tr>
+                `;
+            });
+        }
+        jsonTraducido += JSON.stringify(item.json, null, 4) + "\n\n";
+    });
+
+    document.getElementById("tokens-tbody").innerHTML = tokensHTML || `<tr><td colspan="4" class="border border-gray-300 px-3 py-2 text-center">Sin datos</td></tr>`;
+    document.getElementById("entrada2").innerText = entrada;
+    document.getElementById("gramatica").innerText = "Importación desde Excel";
+    document.getElementById("json-output").innerText = jsonTraducido;
+    mostrarMensaje("Excel cargado correctamente");
+    document.getElementById("excelFile").value = "";
 }
 
 async function cargarHistorial(){
