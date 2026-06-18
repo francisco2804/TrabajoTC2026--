@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import os
+import json # Importante para asegurar el manejo de JSON
 from datetime import datetime
 from lexer import analizar_lexico
 from parser import validar_sintaxis
@@ -34,60 +35,6 @@ GRAMATICAS = {
     "RECIBIR_LOTE": "RECIBIR_LOTE → RECIBIR_LOTE PRODUCTO LOTE PROVEEDOR NUM_INT",
 }
 
-CATALOGO_PRODUCTOS = {
-    "PROD-FRU-001": {"nombre": "Manzana",  "categoria": "Fruta"},
-    "PROD-LAC-001": {"nombre": "Leche",    "categoria": "Lácteo"},
-    "PROD-BEB-001": {"nombre": "Agua",     "categoria": "Bebida"},
-}
-
-CATALOGO_PROVEEDORES = {
-    "PROV-AGRO-001": {"nombre": "AgroPerú SAC"},
-}
-
-
-def generar_sql(interpretado):
-    op = interpretado.get("operacion")
-    prod = interpretado.get("producto", "")
-    cant = interpretado.get("cantidad", 0)
-
-    if op == "INGRESAR":
-        return (
-            f"INSERT INTO movimientos (tipo, producto_id, cantidad, fecha)\n"
-            f"VALUES ('INGRESO', '{prod}', {cant}, GETDATE());"
-        )
-    if op == "RETIRAR":
-        return (
-            f"INSERT INTO movimientos (tipo, producto_id, cantidad, fecha)\n"
-            f"VALUES ('SALIDA', '{prod}', {cant}, GETDATE());"
-        )
-    if op == "CONSULTAR":
-        return (
-            f"SELECT * FROM inventario\n"
-            f"WHERE producto_id = '{prod}';"
-        )
-    if op == "AJUSTAR":
-        return (
-            f"UPDATE inventario\n"
-            f"SET stock = {cant}\n"
-            f"WHERE producto_id = '{prod}';"
-        )
-    if op == "TRANSFERIR":
-        origen  = interpretado.get("origen", "")
-        destino = interpretado.get("destino", "")
-        return (
-            f"UPDATE inventario SET ubicacion = '{destino}'\n"
-            f"WHERE producto_id = '{prod}' AND ubicacion = '{origen}' AND stock >= {cant};"
-        )
-    if op == "RECIBIR_LOTE":
-        lote  = interpretado.get("lote", "")
-        prov  = interpretado.get("proveedor", "")
-        return (
-            f"INSERT INTO lotes (lote_id, producto_id, proveedor_id, cantidad, fecha)\n"
-            f"VALUES ('{lote}', '{prod}', '{prov}', {cant}, GETDATE());"
-        )
-    return "-- Sin traducción"
-
-
 def aplicar_operacion(interpretado):
     global operaciones_count
     op   = interpretado.get("operacion")
@@ -118,7 +65,7 @@ def aplicar_operacion(interpretado):
 
 def procesar_linea(linea):
     """Procesa una línea y devuelve el dict de registro para el frontend."""
-    lexico     = analizar_lexico(linea)
+    lexico      = analizar_lexico(linea)
     tokens_str = " | ".join(
         f"{t['lexema']}:{t['token']}" for t in lexico["tokens"]
     )
@@ -132,7 +79,7 @@ def procesar_linea(linea):
             "tokens":         f"ERROR LÉXICO: {', '.join(errores_lex)}",
             "tokens_detalle": lexico["tokens"],
             "gramatica":      "—",
-            "sql":            "— (error léxico)",
+            "json":           "— (error léxico)",
             "valido":         False,
             "error":          f"Errores léxicos: {', '.join(errores_lex)}",
         }
@@ -144,14 +91,16 @@ def procesar_linea(linea):
             "tokens":         tokens_str,
             "tokens_detalle": lexico["tokens"],
             "gramatica":      GRAMATICAS.get(op, "—"),
-            "sql":            "— (error sintáctico)",
+            "json":           "— (error sintáctico)",
             "valido":         False,
             "error":          sintaxis.get("error") or sintaxis.get("motivo", "Error sintáctico"),
         }
 
     interpretado = interpretar(linea)
     op           = interpretado.get("operacion", "")
-    sql          = generar_sql(interpretado)
+    
+    json_resultado = transformar(interpretado)
+    
     aplicar_operacion(interpretado)
 
     return {
@@ -159,7 +108,7 @@ def procesar_linea(linea):
         "tokens":         tokens_str,
         "tokens_detalle": lexico["tokens"],
         "gramatica":      GRAMATICAS.get(op, "—"),
-        "sql":            sql,
+        "json":           json_resultado,
         "valido":         True,
     }
 
@@ -189,7 +138,7 @@ def compilar():
             "ok":        True,
             "registros": registros,
             "resultado": "\n".join(
-                r["sql"] if r["valido"] else f"Error: {r.get('error','')}"
+                r["json"] if r["valido"] else f"Error: {r.get('error','')}"
                 for r in registros
             ),
             "simbolos":  simbolos,
@@ -209,7 +158,6 @@ def importar_excel():
 
         df = pd.read_excel(ruta, header=None)
 
-        # Toma la primera columna como instrucciones
         lineas    = [str(v).strip() for v in df.iloc[:, 0] if str(v).strip() and str(v) != "nan"]
         registros = [procesar_linea(l) for l in lineas]
 
@@ -257,5 +205,6 @@ def mostrar_arbol():
         "arbol.html",
         arbol=arbol
     )
+
 if __name__ == "__main__":
     app.run(debug=True)
