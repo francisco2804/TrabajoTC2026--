@@ -5,650 +5,196 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Inventario</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-100">
 
 <div class="container mx-auto p-6">
-
-    <!-- Encabezado -->
-
     <div class="bg-white shadow rounded p-6 mb-6">
-
-        <h1 class="text-4xl font-bold text-blue-700">
-            Sistema de Inventario
-        </h1>
-
+        <h1 class="text-4xl font-bold text-blue-700">Sistema de Inventario</h1>
         <p class="mt-2 text-gray-600">
             Este sistema fue desarrollado para apoyar la gestión de inventarios en MYPES del sector retail, donde frecuentemente se presentan errores en las operaciones de almacén, como registros incorrectos de productos, inconsistencias de stock y fallas en la actualización de inventarios. Para solucionar este problema, el sistema utiliza un procesador de lenguaje de dominio específico que interpreta, valida y transforma las operaciones de almacén mediante análisis léxico y sintáctico. De esta manera, permite automatizar procesos, reducir errores operativos y generar automáticamente instrucciones SQL Server para una gestión más eficiente y confiable del inventario.
         </p>
-
     </div>
 
-    <!-- Botones -->
-
     <div class="bg-white shadow rounded p-6 mb-6">
-
-        <h2 class="text-2xl font-bold mb-4">
-            Operaciones
-        </h2>
-
+        <h2 class="text-2xl font-bold mb-4">Operaciones</h2>
         <hr class="my-4">
-
-
-<div class="mt-4">
-
-    <input
-        type="file"
-        id="excelFile"
-        accept=".xlsx,.xls"
-        class="mb-2">
-
-    <button
-        onclick="importarExcel()"
-        class="bg-orange-600 text-white px-4 py-2 rounded">
-
-        Importar Excel
-
-    </button>
-
-</div>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-
-            <button
-                onclick="crearProducto()"
-                class="bg-green-600 text-white p-3 rounded">
-
-                Crear Producto
-
-            </button>
-
-            <button
-                onclick="agregarStock()"
-                class="bg-blue-600 text-white p-3 rounded">
-
-                Agregar Stock
-
-            </button>
-
-            <button
-                onclick="venderProducto()"
-                class="bg-red-600 text-white p-3 rounded">
-
-                Vender Producto
-
-            </button>
-
-            <button
-                onclick="consultarProducto()"
-                class="bg-purple-600 text-white p-3 rounded">
-
-                Consultar Producto
-
-            </button>
-
+        <div class="mt-4">
+            <input type="file" id="excelFile" accept=".xlsx,.xls" class="mb-2">
+            <button onclick="importarExcel()" class="bg-orange-600 text-white px-4 py-2 rounded">Importar Excel</button>
         </div>
-
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+            <button onclick="crearProducto()" class="bg-green-600 text-white p-3 rounded">Crear Producto</button>
+            <button onclick="agregarStock()" class="bg-blue-600 text-white p-3 rounded">Agregar Stock</button>
+            <button onclick="venderProducto()" class="bg-red-600 text-white p-3 rounded">Vender Producto</button>
+            <button onclick="consultarProducto()" class="bg-purple-600 text-white p-3 rounded">Consultar Producto</button>
+        </div>
     </div>
 
-    <!-- Entrada -->
+    <div class="bg-white shadow rounded p-6 mb-6">
+        <h2 class="text-2xl font-bold mb-4">Código Fuente</h2>
+        <textarea id="command-input" class="w-full border p-4 rounded h-24"></textarea>
+        <button onclick="processCommand()" class="mt-4 bg-black text-white px-6 py-2 rounded">Procesar</button>
+        <div id="mensaje" class="mt-4 p-3 rounded hidden"></div>
+    </div>
 
     <div class="bg-white shadow rounded p-6 mb-6">
-
-        <h2 class="text-2xl font-bold mb-4">
-    Código Fuente
-</h2>
-
-        <textarea
-            id="command-input"
-            class="w-full border p-4 rounded h-24">
-        </textarea>
-
-        <button
-            onclick="processCommand()"
-            class="mt-4 bg-black text-white px-6 py-2 rounded">
-
-            Procesar
-
-        </button>
-
-    <div
-    id="mensaje"
-    class="mt-4 p-3 rounded hidden">
-</div>
-
-</div>
-
-    <!-- Tabla principal -->
-
-    <div class="bg-white shadow rounded p-6 mb-6">
-
-        <h2 class="text-2xl font-bold mb-4">
-            Resultado del Compilador
-        </h2>
-
+        <h2 class="text-2xl font-bold mb-4">Resultado del Compilador</h2>
         <div class="overflow-x-auto">
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white shadow rounded p-6">
+                    <h2 class="text-2xl font-bold text-blue-700 mb-4">Análisis Léxico</h2>
+                    <h3 class="font-bold">Tabla de Tokens</h3>
+                    <div class="overflow-x-auto mt-2">
+                        <table class="w-full text-sm border border-gray-300">
+                            <thead class="bg-blue-50">
+                                <tr>
+                                    <th class="border border-gray-300 px-3 py-2 text-left">#</th>
+                                    <th class="border border-gray-300 px-3 py-2 text-left">Lexema</th>
+                                    <th class="border border-gray-300 px-3 py-2 text-left">Token</th>
+                                    <th class="border border-gray-300 px-3 py-2 text-center">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tokens-tbody">
+                                <tr><td colspan="4" class="border border-gray-300 px-3 py-2 text-gray-400 text-center">Sin datos aún</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-    <!-- ANALISIS LEXICO -->
-
-    <div class="bg-white shadow rounded p-6">
-
-        <h2 class="text-2xl font-bold text-blue-700 mb-4">
-            Análisis Léxico
-        </h2>
-
-        <h3 class="font-bold">
-            Tabla de Tokens
-        </h3>
-
-        <div class="overflow-x-auto mt-2">
-            <table class="w-full text-sm border border-gray-300">
-                <thead class="bg-blue-50">
-                    <tr>
-                        <th class="border border-gray-300 px-3 py-2 text-left">#</th>
-                        <th class="border border-gray-300 px-3 py-2 text-left">Lexema</th>
-                        <th class="border border-gray-300 px-3 py-2 text-left">Token</th>
-                        <th class="border border-gray-300 px-3 py-2 text-center">Estado</th>
-                    </tr>
-                </thead>
-                <tbody id="tokens-tbody">
-                    <tr>
-                        <td colspan="4" class="border border-gray-300 px-3 py-2 text-gray-400 text-center">Sin datos aún</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <h3 class="font-bold mt-4">
-            Expresiones Regulares
-        </h3>
-
-        <pre class="border p-3 bg-gray-100">PRODUCTO  → PROD-[A-Z]{3}-\d{3}
-LOTE      → LOT-[A-Z]{3}-\d{6}
-PROVEEDOR → PROV-[A-Z-]+-\d{3}
-UBICACION → ALM-[A-Z]\d{2}
-NUM_INT   → \d+
-FECHA     → \d{4}-\d{2}-\d{2}</pre>
-
-        <h3 class="font-bold mt-4">
-            AFD
-        </h3>
-
-        <pre class="border p-3 bg-gray-100">q0 → q1 (P)
-q1 → q2 (R)
-q2 → q3 (O)
-q3 → q4 (D)
-q4 → q5 (-)
-q5 → q6 (A-Z)
-q6 → q7 (A-Z)
-q7 → q8 (A-Z)
-q8 → q9 (-)
-q9 → q10 (0-9)
-q10 → q11 (0-9)
-q11 → q12* (0-9)</pre>
-
-        <h3 class="font-bold mt-4">
-            Tabla de Transiciones
-        </h3>
-
-        <pre class="border p-3 bg-gray-100">q0  --P-->  q1
-q1  --R-->  q2
-q2  --O-->  q3
-q3  --D-->  q4
-q4  ------> q5
-q5  --L-->  q6
-q6  --L-->  q7
-q7  --L-->  q8
-q8  ------> q9
-q9  --N-->  q10
-q10 --N-->  q11
-q11 --N-->  q12 [FINAL]</pre>
-
-    </div>
-
-    <!-- ANALISIS SINTACTICO -->
-
-    <div class="bg-white shadow rounded p-6">
-
-        <h2 class="text-2xl font-bold text-green-700 mb-4">
-            Análisis Sintáctico
-        </h2>
-
-        <h3 class="font-bold">
-            Código Fuente
-        </h3>
-
-        <pre id="entrada2"
-             class="border p-3 bg-gray-100"></pre>
-
-        <h3 class="font-bold mt-4">
-            Gramática
-        </h3>
-
-        <pre id="gramatica"
-             class="border p-3 bg-gray-100"></pre>
-
-        <h3 class="font-bold mt-4">
-            Árbol Sintáctico
-        </h3>
-
-        <pre id="arbol"
-             class="border p-3 bg-gray-100">
-COMANDO
-├── ACCION
-├── PRODUCTO
-└── CANTIDAD
-        </pre>
-
-    </div>
-
-</div>
-
+                <div class="bg-white shadow rounded p-6">
+                    <h2 class="text-2xl font-bold text-green-700 mb-4">Análisis Sintáctico</h2>
+                    <h3 class="font-bold">Código Fuente</h3>
+                    <pre id="entrada2" class="border p-3 bg-gray-100"></pre>
+                    <h3 class="font-bold mt-4">Gramática</h3>
+                    <pre id="gramatica" class="border p-3 bg-gray-100"></pre>
+                </div>
+            </div>
             <div class="bg-white shadow rounded p-6 mt-6">
-
-    <h2 class="text-2xl font-bold text-red-700 mb-4">
-        Traducción SQL Server
-    </h2>
-
-    <pre id="sql"
-         class="border p-4 bg-gray-100"></pre>
-
-</div>
-
-            
-
+                <h2 class="text-2xl font-bold text-red-700 mb-4">Traducción SQL Server</h2>
+                <pre id="sql" class="border p-4 bg-gray-100"></pre>
+            </div>
         </div>
-
     </div>
 
-    <!-- Resultado -->
-
     <div class="bg-white shadow rounded p-6 mb-6">
-
-        <h2 class="text-2xl font-bold mb-4">
-            Resultado
-        </h2>
-
+        <h2 class="text-2xl font-bold mb-4">Resultado</h2>
         <pre id="resultado"></pre>
-
     </div>
-
-    <!-- Tabla de símbolos -->
-
     <div class="bg-white shadow rounded p-6 mb-6">
-
-        <h2 class="text-2xl font-bold mb-4">
-            Tabla de Símbolos
-        </h2>
-
+        <h2 class="text-2xl font-bold mb-4">Tabla de Símbolos</h2>
         <pre id="simbolos"></pre>
-
     </div>
-
-    <!-- Estadísticas -->
-
     <div class="bg-white shadow rounded p-6 mb-6">
-
-        <h2 class="text-2xl font-bold mb-4">
-            Estadísticas
-        </h2>
-
-        <div id="estadisticas">
-
-            Productos: 0 <br>
-            Stock Total: 0 <br>
-            Operaciones: 0
-
-        </div>
-
+        <h2 class="text-2xl font-bold mb-4">Estadísticas</h2>
+        <div id="estadisticas">Productos: 0 <br> Stock Total: 0 <br> Operaciones: 0</div>
     </div>
-
-    <!-- Historial -->
-
     <div class="bg-white shadow rounded p-6">
-
-        <h2 class="text-2xl font-bold mb-4">
-            Historial de Operaciones
-        </h2>
-
-        <div id="historial">
-        </div>
-
+        <h2 class="text-2xl font-bold mb-4">Historial de Operaciones</h2>
+        <div id="historial"></div>
     </div>
-
 </div>
 
 <script>
+function crearProducto() { let p = prompt("Código del producto:"); let c = prompt("Cantidad inicial:"); document.getElementById("command-input").value += `INGRESAR ${p} ${c}\n`; }
+function agregarStock() { let p = prompt("Código del producto:"); let c = prompt("Cantidad:"); document.getElementById("command-input").value += `INGRESAR ${p} ${c}\n`; }
+function venderProducto() { let p = prompt("Código del producto:"); let c = prompt("Cantidad:"); document.getElementById("command-input").value += `RETIRAR ${p} ${c}\n`; }
+function consultarProducto() { let p = prompt("Código del producto:"); document.getElementById("command-input").value += `CONSULTAR ${p}\n`; }
 
-function crearProducto() {
-
-    let producto = prompt("Código del producto (ej: PROD-FRU-001):");
-    let cantidad = prompt("Cantidad inicial:");
-
-    document.getElementById("command-input").value +=
-        `INGRESAR ${producto} ${cantidad}\n`;
-}
-
-function agregarStock() {
-
-    let producto = prompt("Código del producto:");
-    let cantidad = prompt("Cantidad:");
-
-    document.getElementById("command-input").value +=
-        `INGRESAR ${producto} ${cantidad}\n`;
-}
-
-function venderProducto() {
-
-    let producto = prompt("Código del producto:");
-    let cantidad = prompt("Cantidad:");
-
-    document.getElementById("command-input").value +=
-        `RETIRAR ${producto} ${cantidad}\n`;
-}
-
-function consultarProducto() {
-
-    let producto = prompt("Código del producto:");
-
-    document.getElementById("command-input").value +=
-        `CONSULTAR ${producto}\n`;
-}
-
-function mostrarMensaje(
-    texto,
-    exito = true
-){
-
-    const mensaje =
-        document.getElementById(
-            "mensaje"
-        );
-
+function mostrarMensaje(texto, exito = true) {
+    const mensaje = document.getElementById("mensaje");
     mensaje.innerText = texto;
+    mensaje.className = exito ? "mt-4 p-3 rounded bg-green-200 text-green-800 block" : "mt-4 p-3 rounded bg-red-200 text-red-800 block";
+    setTimeout(() => mensaje.classList.add("hidden"), 3000);
+}
 
-    mensaje.className =
-        exito
-        ? "mt-4 p-3 rounded bg-green-200 text-green-800"
-        : "mt-4 p-3 rounded bg-red-200 text-red-800";
-
-    setTimeout(() => {
-
-        mensaje.classList.add(
-            "hidden"
-        );
-
-    }, 3000);
-}    
-
-
-    
 async function processCommand() {
+    const codigo = document.getElementById("command-input").value;
+    const response = await fetch("/compilar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ codigo }) });
+    const data = await response.json();
+    if(!data.ok){ alert(data.error); return; }
 
-    const codigo =
-        document.getElementById(
-            "command-input"
-        ).value;
+    let entrada = "", gramatica = "", sql = "", tokensHTML = "";
 
-    const response =
-        await fetch("/compilar", {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify({
-                codigo: codigo
-            })
+    data.registros.forEach(item => {
+        item.tokens_detalle.forEach((token, index) => {
+            tokensHTML += `<tr><td class="border border-gray-300 px-3 py-2">${index + 1}</td><td class="border border-gray-300 px-3 py-2">${token.lexema}</td><td class="border border-gray-300 px-3 py-2">${token.token}</td><td class="border border-gray-300 px-3 py-2 text-center">✓</td></tr>`;
         });
-
-    const data =
-        await response.json();
-
-    if(!data.ok){
-
-        alert(data.error);
-
-        return;
-    }
-
-    let entrada = "";
-let tokens = "";
-let gramatica = "";
-let sql = "";
-
-data.registros.forEach(item => {
-
-    entrada += item.entrada + "\n";
-
-    tokens += item.tokens + "\n";
-
-    gramatica += item.gramatica + "\n";
-
-    sql += item.sql + "\n";
-
-});
-
-document.getElementById(
-    "entrada"
-).innerText = entrada;
-
-document.getElementById(
-    "entrada2"
-).innerText = entrada;
-
-document.getElementById(
-    "tokens"
-).innerText = tokens;
-
-document.getElementById(
-    "gramatica"
-).innerText = gramatica;
-
-document.getElementById(
-    "sql"
-).innerText = sql;
-
-    mostrarMensaje(
-    "Comando procesado correctamente"
-);
-
-    document.getElementById(
-    "command-input"
-).value = "";
-
-    
-
-    document.getElementById(
-        "resultado"
-    ).innerText =
-        data.resultado;
-
-    let simbolos = "";
-
-    for(let producto in data.simbolos){
-
-        simbolos +=
-            producto +
-            " → " +
-            data.simbolos[producto] +
-            "\n";
-    }
-
-    document.getElementById(
-        "simbolos"
-    ).innerText =
-        simbolos;
-
-    cargarHistorial();
-
-    cargarEstadisticas();
-
-}
-
-async function importarExcel(){
-
-    const archivo =
-        document.getElementById(
-            "excelFile"
-        ).files[0];
-
-    if(!archivo){
-
-        alert(
-            "Seleccione un archivo Excel"
-        );
-
-        return;
-    }
-
-    const formData =
-        new FormData();
-
-    formData.append(
-        "archivo",
-        archivo
-    );
-
-    const response =
-        await fetch(
-            "/importar_excel",
-            {
-                method:"POST",
-                body:formData
-            }
-        );
-
-    const data =
-        await response.json();
-
-    if(data.ok){
-
-       let entrada = "";
-let tokens = "";
-let gramatica = "";
-let sql = "";
-
-data.registros.forEach(item => {
-
-    entrada += item.entrada + "\n";
-
-    tokens += item.tokens + "\n";
-
-    gramatica += item.gramatica + "\n";
-
-    sql += item.sql + "\n";
-
-});
-
-document.getElementById(
-    "entrada"
-).innerText = entrada;
-
-document.getElementById(
-    "entrada2"
-).innerText = entrada;
-
-document.getElementById(
-    "tokens"
-).innerText = tokens;
-
-document.getElementById(
-    "gramatica"
-).innerText = gramatica;
-
-document.getElementById(
-    "sql"
-).innerText = sql;
-
-    mostrarMensaje(
-    "Excel cargado correctamente"
-);
-
-    document.getElementById(
-    "excelFile"
-).value = "";    
-
-    cargarHistorial();
-
-    cargarEstadisticas();
-
-}
-        
-    else{
-
-        alert(
-            data.error
-        );
-    }
-}
-
-
-
-async function cargarHistorial(){
-
-    const response =
-        await fetch("/historial");
-
-    const data =
-        await response.json();
-
-    let html = "";
-
-    data.forEach(item => {
-
-        html += `
-        <div class="border p-2 mb-2">
-
-            ${item.fecha}
-            |
-            ${item.accion}
-            |
-            ${item.producto}
-            |
-            ${item.cantidad}
-
-        </div>
-        `;
+        entrada += item.entrada + "\n";
+        gramatica += item.gramatica + "\n";
+        sql += item.sql + "\n";
     });
 
-    document.getElementById(
-        "historial"
-    ).innerHTML =
-        html;
+    document.getElementById("tokens-tbody").innerHTML = tokensHTML || `<tr><td colspan="4" class="border border-gray-300 px-3 py-2 text-center">Sin datos</td></tr>`;
+    document.getElementById("entrada2").innerText = entrada;
+    document.getElementById("gramatica").innerText = gramatica;
+    document.getElementById("sql").innerText = sql;
+    document.getElementById("resultado").innerText = data.resultado;
+
+    let simbolos = "";
+    for (let producto in data.simbolos) { simbolos += producto + " → " + data.simbolos[producto] + "\n"; }
+    document.getElementById("simbolos").innerText = simbolos;
+
+    mostrarMensaje("Comando procesado correctamente");
+    document.getElementById("command-input").value = "";
+    cargarHistorial();
+    cargarEstadisticas();
+}
+
+async function importarExcel() {
+    const archivo = document.getElementById("excelFile").files[0];
+    if(!archivo){ alert("Seleccione un archivo Excel"); return; }
+    const formData = new FormData(); formData.append("archivo", archivo);
+    const response = await fetch("/importar_excel", { method:"POST", body:formData });
+    const data = await response.json();
+
+    if(data.ok){
+        let entrada = "", gramatica = "", sql = "", tokensHTML = "";
+        data.registros.forEach(item => {
+            item.tokens_detalle.forEach((token, index) => {
+                tokensHTML += `<tr><td class="border border-gray-300 px-3 py-2">${index + 1}</td><td class="border border-gray-300 px-3 py-2">${token.lexema}</td><td class="border border-gray-300 px-3 py-2">${token.token}</td><td class="border border-gray-300 px-3 py-2 text-center">✓</td></tr>`;
+            });
+            entrada += item.entrada + "\n";
+            gramatica += item.gramatica + "\n";
+            sql += item.sql + "\n";
+        });
+
+        document.getElementById("tokens-tbody").innerHTML = tokensHTML;
+        document.getElementById("entrada2").innerText = entrada;
+        document.getElementById("gramatica").innerText = gramatica;
+        document.getElementById("sql").innerText = sql;
+
+        let simbolos = "";
+        for (let producto in data.simbolos) { simbolos += producto + " → " + data.simbolos[producto] + "\n"; }
+        document.getElementById("simbolos").innerText = simbolos;
+
+        mostrarMensaje("Excel cargado correctamente");
+        document.getElementById("excelFile").value = "";
+        cargarHistorial();
+        cargarEstadisticas();
+    } else { alert(data.error); }
+}
+
+async function cargarHistorial(){
+    const response = await fetch("/historial");
+    const data = await response.json();
+    let html = "";
+    data.forEach(item => { 
+        html += `<div class="border p-2 mb-2">${item.fecha} | ${item.accion} | ${item.producto} | ${item.cantidad}</div>`; });
+    document.getElementById("historial").innerHTML = html;
 }
 
 async function cargarEstadisticas(){
-
-    const response =
-        await fetch(
-            "/estadisticas"
-        );
-
-    const data =
-        await response.json();
-
-    document.getElementById(
-        "estadisticas"
-    ).innerHTML =
-
-        `Productos: ${data.productos}<br>
-         Stock Total: ${data.stock}<br>
-         Operaciones: ${data.operaciones}`;
+    const response = await fetch("/estadisticas");
+    const data = await response.json();
+    document.getElementById("estadisticas").innerHTML = `Productos: ${data.productos}<br>Stock Total: ${data.stock}<br>Operaciones: ${data.operaciones}`;
 }
 
 cargarHistorial();
 cargarEstadisticas();
-
+    
 </script>
-
 </body>
 </html>
