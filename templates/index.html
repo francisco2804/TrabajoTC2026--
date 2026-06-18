@@ -14,7 +14,7 @@
     <div class="bg-white shadow rounded p-6 mb-6">
         <h1 class="text-4xl font-bold text-blue-700">Sistema de Inventario</h1>
         <p class="mt-2 text-gray-600">
-            Este sistema fue desarrollado para apoyar la gestión de inventarios en MYPES del sector retail, donde frecuentemente se presentan errores en las operaciones de almacén, como registros incorrectos de productos, inconsistencias de stock y fallas en la actualización de inventarios. Para solucionar este problema, el sistema utiliza un procesador de lenguaje de dominio específico que interpreta, valida y transforma las operaciones de almacén mediante análisis léxico y sintáctico. De esta manera, permite automatizar procesos, reducir errores operativos y generar automáticamente instrucciones SQL Server para una gestión más eficiente y confiable del inventario.
+            Este sistema fue desarrollado para apoyar la gestión de inventarios en MYPES del sector retail, donde frecuentemente se presentan errores en las operaciones de almacén, como registros incorrectos de productos, inconsistencias de stock y fallas en la actualización de inventarios. Para solucionar este problema, el sistema utiliza un procesador de lenguaje de dominio específico que interpreta, valida y transforma las operaciones de almacén mediante análisis léxico y sintáctico. De esta manera, permite automatizar procesos, reducir errores operativos y generar automáticamente representaciones JSON estructuradas para una gestión más eficiente y confiable del inventario.
         </p>
     </div>
 
@@ -73,8 +73,8 @@
                 </div>
             </div>
             <div class="bg-white shadow rounded p-6 mt-6">
-                <h2 class="text-2xl font-bold text-red-700 mb-4">Traducción SQL Server</h2>
-                <pre id="sql" class="border p-4 bg-gray-100"></pre>
+                <h2 class="text-2xl font-bold text-red-700 mb-4">Traducción a JSON</h2>
+                <pre id="json-output" class="border p-4 bg-gray-100"></pre>
             </div>
         </div>
     </div>
@@ -116,7 +116,7 @@ async function processCommand() {
     const data = await response.json();
     if(!data.ok){ alert(data.error); return; }
 
-    let entrada = "", gramatica = "", sql = "", tokensHTML = "";
+    let entrada = "", gramatica = "", jsonTraducido = "", tokensHTML = "";
 
     data.registros.forEach(item => {
         item.tokens_detalle.forEach((token, index) => {
@@ -124,13 +124,13 @@ async function processCommand() {
         });
         entrada += item.entrada + "\n";
         gramatica += item.gramatica + "\n";
-        sql += item.sql + "\n";
+        jsonTraducido += item.json + "\n";
     });
 
     document.getElementById("tokens-tbody").innerHTML = tokensHTML || `<tr><td colspan="4" class="border border-gray-300 px-3 py-2 text-center">Sin datos</td></tr>`;
     document.getElementById("entrada2").innerText = entrada;
     document.getElementById("gramatica").innerText = gramatica;
-    document.getElementById("sql").innerText = sql;
+    document.getElementById("json-output").innerText = jsonTraducido;
     document.getElementById("resultado").innerText = data.resultado;
 
     let simbolos = "";
@@ -151,20 +151,20 @@ async function importarExcel() {
     const data = await response.json();
 
     if(data.ok){
-        let entrada = "", gramatica = "", sql = "", tokensHTML = "";
+        let entrada = "", gramatica = "", jsonTraducido = "", tokensHTML = "";
         data.registros.forEach(item => {
             item.tokens_detalle.forEach((token, index) => {
                 tokensHTML += `<tr><td class="border border-gray-300 px-3 py-2">${index + 1}</td><td class="border border-gray-300 px-3 py-2">${token.lexema}</td><td class="border border-gray-300 px-3 py-2">${token.token}</td><td class="border border-gray-300 px-3 py-2 text-center">✓</td></tr>`;
             });
             entrada += item.entrada + "\n";
             gramatica += item.gramatica + "\n";
-            sql += item.sql + "\n";
+            jsonTraducido += item.json + "\n";
         });
 
         document.getElementById("tokens-tbody").innerHTML = tokensHTML;
         document.getElementById("entrada2").innerText = entrada;
         document.getElementById("gramatica").innerText = gramatica;
-        document.getElementById("sql").innerText = sql;
+        document.getElementById("json-output").innerText = jsonTraducido;
 
         let simbolos = "";
         for (let producto in data.simbolos) { simbolos += producto + " → " + data.simbolos[producto] + "\n"; }
